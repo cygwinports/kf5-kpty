@@ -1,0 +1,27 @@
+inherit kf5
+
+NAME="kf5-kpty"
+VERSION=5.9.0
+RELEASE=1
+CATEGORY="Libs"
+SUMMARY="KDE 5 pseudo-terminal device library"
+DESCRIPTION="This library provides primitives to interface with pseudo terminal
+devices as well as a KProcess derived class for running child processes and
+communicating with them using a pty."
+
+PATCH_URI="5.9.0-cygwin.patch"
+
+PKG_NAMES="libKF5Pty5 libKF5Pty-devel"
+libKF5Pty5_CONTENTS="
+	usr/bin/cygKF5Pty-5.dll
+	usr/share/doc/
+	usr/share/locale/
+"
+libKF5Pty_devel_REQUIRES="libQt5Core-devel"
+libKF5Pty_devel_CONTENTS="
+	usr/include/KF5/KPty/
+	usr/include/KF5/kpty_version.h
+	usr/lib/cmake/KF5Pty/
+	${QT5_MKSPECSDIR#/}/modules/qt_KPty.pri
+	usr/lib/libKF5Pty.dll.a
+"

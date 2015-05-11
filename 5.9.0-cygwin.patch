@@ -1,0 +1,57 @@
+--- origsrc/kpty-5.9.0/src/kpty.cpp	2015-04-04 07:11:31.000000000 -0500
++++ src/kpty-5.9.0/src/kpty.cpp	2015-05-10 18:46:24.685673800 -0500
+@@ -503,7 +503,7 @@ void KPty::login(const char *user, const
+     addToUtmp(d->ttyName.constData(), remotehost, d->masterFd);
+     Q_UNUSED(user);
+ #else
+-# if HAVE_UTMPX
++# if HAVE_LOGINX
+     struct utmpx l_struct;
+ # else
+     struct utmp l_struct;
+@@ -536,7 +536,7 @@ void KPty::login(const char *user, const
+ #  endif
+ # endif
+ 
+-# if HAVE_UTMPX
++# if HAVE_LOGINX
+     gettimeofday(&l_struct.ut_tv, 0);
+ # else
+     l_struct.ut_time = time(0);
+--- origsrc/kpty-5.9.0/src/kptydevice.cpp	2015-04-04 07:11:31.000000000 -0500
++++ src/kpty-5.9.0/src/kptydevice.cpp	2015-05-10 18:47:24.539274200 -0500
+@@ -36,6 +36,7 @@
+ #include <termios.h>
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
++#include <sys/socket.h>
+ #if HAVE_SYS_FILIO_H
+ # include <sys/filio.h>
+ #endif
+@@ -46,7 +47,7 @@
+ #if defined(Q_OS_FREEBSD) || defined(Q_OS_MAC)
+ // "the other end's output queue size" - kinda braindead, huh?
+ # define PTY_BYTES_AVAILABLE TIOCOUTQ
+-#elif defined(TIOCINQ)
++#elif defined(TIOCINQ) && !defined(Q_OS_CYGWIN)
+ // "our end's input queue size"
+ # define PTY_BYTES_AVAILABLE TIOCINQ
+ #else
+@@ -287,7 +288,7 @@ bool KPtyDevicePrivate::_k_canRead()
+     int available;
+ #endif
+     if (!::ioctl(q->masterFd(), PTY_BYTES_AVAILABLE, (char *) &available)) {
+-#ifdef Q_OS_SOLARIS
++#if defined(Q_OS_SOLARIS) || defined(Q_OS_CYGWIN)
+         // A Pty is a STREAMS module, and those can be activated
+         // with 0 bytes available. This happens either when ^C is
+         // pressed, or when an application does an explicit write(a,b,0)
+@@ -309,7 +310,7 @@ bool KPtyDevicePrivate::_k_canRead()
+ #endif
+ 
+         char *ptr = readBuffer.reserve(available);
+-#ifdef Q_OS_SOLARIS
++#if defined(Q_OS_SOLARIS) || defined(Q_OS_CYGWIN)
+         // Even if available > 0, it is possible for read()
+         // to return 0 on Solaris, due to 0-byte writes in the stream.
+         // Ignore them and keep reading until we hit *some* data.

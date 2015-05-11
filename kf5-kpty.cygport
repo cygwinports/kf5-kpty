@@ -17,7 +17,7 @@ libKF5Pty5_CONTENTS="
 	usr/share/doc/
 	usr/share/locale/
 "
-libKF5Pty_devel_REQUIRES="libQt5Core-devel"
+libKF5Pty_devel_REQUIRES="libKF5CoreAddons-devel libQt5Core-devel"
 libKF5Pty_devel_CONTENTS="
 	usr/include/KF5/KPty/
 	usr/include/KF5/kpty_version.h

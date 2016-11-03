@@ -1,6 +1,14 @@
 --- origsrc/kpty-5.9.0/src/kpty.cpp	2015-04-04 07:11:31.000000000 -0500
 +++ src/kpty-5.9.0/src/kpty.cpp	2015-05-10 18:46:24.685673800 -0500
-@@ -503,7 +503,7 @@ void KPty::login(const char *user, const
+@@ -22,6 +22,7 @@
+    Boston, MA 02110-1301, USA.
+ */
+ 
++#define _XOPEN_SOURCE
+ #include "kpty_p.h"
+ 
+ #include <QProcess>
+@@ -503,7 +504,7 @@ void KPty::login(const char *user, const
      addToUtmp(d->ttyName.constData(), remotehost, d->masterFd);
      Q_UNUSED(user);
  #else
@@ -9,7 +17,7 @@
      struct utmpx l_struct;
  # else
      struct utmp l_struct;
-@@ -536,7 +536,7 @@ void KPty::login(const char *user, const
+@@ -536,7 +537,7 @@ void KPty::login(const char *user, const
  #  endif
  # endif
  
